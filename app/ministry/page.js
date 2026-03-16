@@ -1,9 +1,10 @@
+import Parser from 'rss-parser';
+
 async function getPosts() {
   try {
-    const res = await fetch("https://livelyoracles561710947.wordpress.com/wp-json/wp/v2/posts?per_page=6");
-    if (!res.ok) return [];
-    const posts = await res.json();
-    return posts;
+    const parser = new Parser();
+    const feed = await parser.parseURL('https://livelyoracles561710947.wordpress.com/feed/');
+    return feed.items.slice(0, 6);
   } catch (error) {
     return [];
   }
@@ -25,11 +26,11 @@ export default async function Ministry() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map((post) => (
-              <a key={post.id} href={post.link} target="_blank" rel="noopener noreferrer" className="border border-gray-800 rounded-xl p-6 hover:border-gray-500 transition">
-                <h2 className="text-xl font-semibold mb-3" dangerouslySetInnerHTML={{ __html: post.title.rendered }} />
-                <div className="text-gray-400 text-sm line-clamp-3" dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }} />
-                <p className="text-gray-600 text-xs mt-4">{new Date(post.date).toLocaleDateString()}</p>
+            {posts.map((post, index) => (
+              <a key={index} href={post.link} target="_blank" rel="noopener noreferrer" className="border border-gray-800 rounded-xl p-6 hover:border-gray-500 transition">
+                <h2 className="text-xl font-semibold mb-3">{post.title}</h2>
+                <p className="text-gray-400 text-sm line-clamp-3">{post.contentSnippet}</p>
+                <p className="text-gray-600 text-xs mt-4">{new Date(post.pubDate).toLocaleDateString()}</p>
               </a>
             ))}
           </div>
